@@ -1,0 +1,2 @@
+class PostsTags < ApplicationController
+end
