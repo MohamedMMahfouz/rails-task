@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
-    before_action :authorize_request, exept: :create
+    skip_before_action :authorize_request, only: :create
     before_action :find_user , except: %i[create index]
-    
+    # global before calls in app contr
     
     def index
         @users = User.all
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
     end
     
     def destroy
-        @user.destroy
+        @current_user.destroy
     end
 
     def update
@@ -41,6 +41,7 @@ class UsersController < ApplicationController
         # @userposts = @user ? @user.posts :  Post.scoped
         rescue ActiveRecord::RecordNotFound
             render json: {errors: 'user not found'} , status: :not_found
+            # global rescue
     end
     
     

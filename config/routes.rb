@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     end
 
   resources :posts do
-    resources :comments
+  resources :comments
   end
   
   resources :tags
@@ -23,5 +23,6 @@ Rails.application.routes.draw do
   # end
   # resources :users, param: :name
   post '/auth/login', to: 'authentication#login'
-  get '/*a', to: 'application#not_found'
+  # get '/*a', to: 'application#not_found'
+  
 end

@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-    before_action :authorize_request, exept: :create
+    # before_action :authorize_request, exept: :create
     before_action :set_post, except: %i[create index]
     def index
         @posts = Post.all
@@ -8,11 +8,10 @@ class PostsController < ApplicationController
 
     def show
         render json: @post
-
     end
-    
+    # use current user
     def create 
-        @post = Post.new(post_params)
+        @post = @current_user.posts.new(post_params)
         if @post.save
             render json: @post , status: :created
         else
@@ -23,19 +22,24 @@ class PostsController < ApplicationController
 
 
     def destroy
-        @post.destroy
+        current_user_post.destroy
     end
 
     def update
-        @post = @current_user.posts.find(params[:id]).update(post_params)
+        current_user_post.update(post_params)
         render json: @post , status: :ok
     end
-
+    # generalize the logic of current user and handle it in separate func.
     
     private
 
     def set_post
         @post = Post.find(params[:id])
+       
+    end
+
+    def current_user_post
+        @current_user_post = @current_user.posts.find(params[:id])
     end
 
     # def post_create_params

@@ -1,25 +1,34 @@
 class CommentsController < ApplicationController
-    before_action :authorize_request, except: :create
+   
     before_action :set_user
     before_action :set_post
     before_action :set_comment
  
     def index
 
-        if params[:post_id] #get  all comments of a specific post
+        if params[:post_id]
             @comments = @post.comments
-            render json: @comments, status: :ok
-        else 
-            if params[:user_id] #get all comments of a specific user
-                @comments = @user.comments
-                render json: @comments, status: :ok
-            else
-                render json: {error: 'no comments found'},
-                status: :unprocessable_entity
-            end
+        else
+            @comments = @user.comments
         end
+        render json: @comments, status: :ok
 
     end
+        # refactor
+        # if params[:post_id] #get  all comments of a specific post
+        #     @comments = @post.comments
+        #     render json: @comments, status: :ok
+        # else 
+        #     if params[:user_id] #get all comments of a specific user
+        #         @comments = @user.comments
+        #         render json: @comments, status: :ok
+        #     else
+        #         render json: {error: 'no comments found'},
+        #         status: :unprocessable_entity
+        #     end
+        # end
+
+   
   
     def show
         render json: @comment, status: :ok
@@ -29,14 +38,16 @@ class CommentsController < ApplicationController
         @comment.destroy
     end
 
+    # refactor with methods and make one for show
     def update
-        @current_user.posts.find(params[:post_id]).comments.find(params[:id]).update(comment_params)
-        render json: @comment, status: :ok
+        current_user_post_comment.update(comment_params)
+        render json: @current_user_post_comment, status: :ok
     end
     
-
+    # use current user in all create functions
     def create
-        @comment = Comment.new(comment_params)
+        # @comment = Comment.new(comment_params)
+        @comment = @current_user.comments.new(comment_params)
         if @comment.save
             render json: @comment, status: :created
         else
@@ -50,6 +61,7 @@ class CommentsController < ApplicationController
 
     def set_user
         @user = User.find(params[:user_id]) if params[:user_id]
+        
     end
 
     def set_post
@@ -60,6 +72,14 @@ class CommentsController < ApplicationController
         @comment = Comment.find(params[:id]) if params[:id]
      end
 
+    def current_user_post
+        
+    end 
+
+    def current_user_post_comment
+        current_user_post =  @current_user.posts.find(params[:post_id]) if params[:post_id]
+        @current_user_post_comment = current_user_post.comments.find(params[:id]) 
+    end
 
     def comment_params
         params.permit(:id , :content, :user_id, :post_id)

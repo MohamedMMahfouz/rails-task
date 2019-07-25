@@ -1,5 +1,5 @@
 class TagsController < ApplicationController
-    before_action :authorize_request, execpt: :create
+    # before_action :authorize_request, execpt: :create
     before_action :set_tag, except: %i[create index]
     
     def index
@@ -14,15 +14,16 @@ class TagsController < ApplicationController
     def destroy
         @tag.destroy
     end
-
-    def create
-        @tag = Tag.new(tag_params)
-        if @tag.save
-            render json: @tag , status: :created
-        else
-            render json: {error: @tag.errors.full_messages},
-            status: :unprocessable_entity
-    end
+    # # no need for this
+    # def create
+    #     @tag = Tag.new(tag_params)
+    #     if @tag.save
+    #         render json: @tag , status: :created
+    #     else
+    #         render json: {error: @tag.errors.full_messages},
+    #         status: :unprocessable_entity
+    #     end
+    # end
 
     private
     def set_tag
